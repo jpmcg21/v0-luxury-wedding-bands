@@ -311,7 +311,16 @@ export const LiveTryOn = forwardRef<LiveTryOnHandle, LiveTryOnProps>(function Li
         ref={containerRef}
         className="relative w-full max-w-md aspect-[3/4] bg-muted rounded-lg overflow-hidden"
       >
-        <video ref={videoRef} className="hidden" playsInline muted />
+        {/* Kept off-screen rather than display:none — hidden video elements stop
+            decoding frames on many mobile browsers (notably iOS Safari), which
+            would starve the canvas of a source image to draw. */}
+        <video
+          ref={videoRef}
+          className="absolute w-px h-px opacity-0 pointer-events-none -z-10"
+          style={{ left: "-9999px" }}
+          playsInline
+          muted
+        />
         <canvas ref={canvasRef} className="w-full h-full object-cover" />
 
         {cameraStatus === "starting" && !usingUpload && (
