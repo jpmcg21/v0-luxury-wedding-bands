@@ -37,7 +37,7 @@ async function getDetector() {
  * a ring on the ring finger. Returns null if no hand is detected.
  */
 export async function detectRingFingerTransform(
-  image: HTMLImageElement | HTMLCanvasElement,
+  image: HTMLImageElement | HTMLCanvasElement | HTMLVideoElement,
 ): Promise<RingFingerTransform | null> {
   const detector = await getDetector()
   const hands = await detector.estimateHands(image, { flipHorizontal: false })

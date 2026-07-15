@@ -469,51 +469,6 @@ export async function removeFromCart(cartId: string, lineIds: string[]): Promise
   return data.cartLinesRemove.cart
 }
 
-// Create a cart pre-populated with a line item and custom attributes (used for the
-// $1 Try-On Save checkout, so the customer's name/email/try-on id travel with the order)
-export async function createCartWithAttributes(
-  merchandiseId: string,
-  attributes: Array<{ key: string; value: string }>,
-  email?: string,
-): Promise<ShopifyCart> {
-  const query = `
-    mutation cartCreate($input: CartInput!) {
-      cartCreate(input: $input) {
-        cart {
-          id
-          checkoutUrl
-        }
-        userErrors {
-          field
-          message
-        }
-      }
-    }
-  `
-
-  const { data } = await shopifyFetch<{
-    cartCreate: {
-      cart: ShopifyCart
-      userErrors: Array<{ field: string; message: string }>
-    }
-  }>({
-    query,
-    variables: {
-      input: {
-        lines: [{ merchandiseId, quantity: 1 }],
-        attributes,
-        ...(email ? { buyerIdentity: { email } } : {}),
-      },
-    },
-  })
-
-  if (data.cartCreate.userErrors.length > 0) {
-    throw new Error(data.cartCreate.userErrors[0].message)
-  }
-
-  return data.cartCreate.cart
-}
-
 // Get cart
 export async function getCart(cartId: string): Promise<ShopifyCart | null> {
   const query = `

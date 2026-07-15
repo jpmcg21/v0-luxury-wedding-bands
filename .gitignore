@@ -22,7 +22,8 @@ yarn-error.log*
 # vercel
 .vercel
 
-# try-on saves (contains customer PII + images, local JSON store for now)
+# try-on leads (contains customer PII, local JSON store for now)
+/data/try-on-leads.json
 /data/try-on-saves.json
 
 # typescript
