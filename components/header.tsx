@@ -1,6 +1,6 @@
 "use client"
 
-import { ShoppingBag } from "lucide-react"
+import { ShoppingBag, Sparkles } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { useShopifyCart } from "@/contexts/shopify-cart-context"
 
@@ -18,6 +18,13 @@ export function Header() {
             <nav className="hidden md:flex items-center gap-8">
               <a href="/#collection" className="text-sm hover:text-foreground/70 transition-colors">
                 Shop
+              </a>
+              <a
+                href="/try-on"
+                className="text-sm flex items-center gap-1.5 text-foreground/90 hover:text-foreground transition-colors"
+              >
+                <Sparkles className="w-3.5 h-3.5" />
+                Try On
               </a>
               <a href="/about" className="text-sm hover:text-foreground/70 transition-colors">
                 About
