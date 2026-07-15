@@ -1,23 +1,24 @@
 "use client"
 
 import { useEffect, useRef, useState } from "react"
+import { RotateCcw } from "lucide-react"
 import { Header } from "@/components/header"
 import { Footer } from "@/components/footer"
 import { Button } from "@/components/ui/button"
-import { LiveTryOn, type LiveTryOnHandle } from "@/components/TryOn/LiveTryOn"
+import { CameraView } from "@/components/TryOn/CameraView"
+import { RingOverlay, type RingOverlayHandle } from "@/components/TryOn/RingOverlay"
 import { RingSelector } from "@/components/TryOn/RingSelector"
 import { SaveModal } from "@/components/TryOn/SaveModal"
 import type { ShopifyProduct } from "@/lib/shopify/types"
-
-const STORE_DOMAIN = process.env.NEXT_PUBLIC_SHOPIFY_STORE_DOMAIN || process.env.NEXT_PUBLIC_SHOPIFY_DOMAIN || ""
 
 export default function TryOnPage() {
   const [products, setProducts] = useState<ShopifyProduct[]>([])
   const [isLoadingProducts, setIsLoadingProducts] = useState(true)
   const [selectedProduct, setSelectedProduct] = useState<ShopifyProduct | null>(null)
+  const [capturedImage, setCapturedImage] = useState<string | null>(null)
   const [isSaveModalOpen, setIsSaveModalOpen] = useState(false)
 
-  const liveTryOnRef = useRef<LiveTryOnHandle>(null)
+  const ringOverlayRef = useRef<RingOverlayHandle>(null)
 
   useEffect(() => {
     async function fetchProducts() {
@@ -39,8 +40,6 @@ export default function TryOnPage() {
   }, [])
 
   const ringImageUrl = selectedProduct?.images.edges[0]?.node.url ?? null
-  const productUrl =
-    selectedProduct && STORE_DOMAIN ? `https://${STORE_DOMAIN}/products/${selectedProduct.handle}` : undefined
 
   return (
     <div className="min-h-screen bg-background">
@@ -54,34 +53,45 @@ export default function TryOnPage() {
               See It On Your Hand
             </h1>
             <p className="text-lg text-muted-foreground">
-              Point your camera at your hand and watch the ring follow it live.
+              Snap a photo or use your camera, then try on a ring from our collection.
             </p>
           </div>
 
           <div className="max-w-md mx-auto flex flex-col items-center gap-8">
-            <LiveTryOn ref={liveTryOnRef} ringImageUrl={ringImageUrl} />
+            {!capturedImage ? (
+              <CameraView onCapture={setCapturedImage} />
+            ) : (
+              <>
+                <RingOverlay ref={ringOverlayRef} imageSrc={capturedImage} ringImageUrl={ringImageUrl} />
 
-            <div className="w-full">
-              <p className="text-sm font-medium mb-3">Choose a band</p>
-              {isLoadingProducts ? (
-                <p className="text-sm text-muted-foreground">Loading rings…</p>
-              ) : (
-                <RingSelector
-                  products={products}
-                  selectedProductId={selectedProduct?.id ?? null}
-                  onSelect={setSelectedProduct}
-                />
-              )}
-            </div>
+                <Button variant="outline" size="sm" onClick={() => setCapturedImage(null)} className="gap-2">
+                  <RotateCcw className="w-3.5 h-3.5" />
+                  Retake Photo
+                </Button>
 
-            <Button
-              size="lg"
-              className="w-full"
-              disabled={!selectedProduct}
-              onClick={() => setIsSaveModalOpen(true)}
-            >
-              Save My Look
-            </Button>
+                <div className="w-full">
+                  <p className="text-sm font-medium mb-3">Choose a band</p>
+                  {isLoadingProducts ? (
+                    <p className="text-sm text-muted-foreground">Loading rings…</p>
+                  ) : (
+                    <RingSelector
+                      products={products}
+                      selectedProductId={selectedProduct?.id ?? null}
+                      onSelect={setSelectedProduct}
+                    />
+                  )}
+                </div>
+
+                <Button
+                  size="lg"
+                  className="w-full"
+                  disabled={!selectedProduct}
+                  onClick={() => setIsSaveModalOpen(true)}
+                >
+                  Save & Share
+                </Button>
+              </>
+            )}
           </div>
         </div>
       </main>
@@ -91,9 +101,8 @@ export default function TryOnPage() {
       <SaveModal
         open={isSaveModalOpen}
         onOpenChange={setIsSaveModalOpen}
-        getScreenshot={() => liveTryOnRef.current?.captureScreenshot() ?? Promise.resolve(null)}
+        getImageDataUrl={() => ringOverlayRef.current?.exportImage() ?? null}
         productTitle={selectedProduct?.title}
-        productUrl={productUrl}
       />
     </div>
   )

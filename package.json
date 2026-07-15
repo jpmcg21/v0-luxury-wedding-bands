@@ -61,7 +61,6 @@
     "react-hook-form": "^7.60.0",
     "react-resizable-panels": "^2.1.7",
     "recharts": "2.15.4",
-    "resend": "^6.17.2",
     "server-only": "latest",
     "shadcn": "^4.8.0",
     "sonner": "^1.7.4",

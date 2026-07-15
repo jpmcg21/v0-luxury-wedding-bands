@@ -1,7 +1,7 @@
 "use client"
 
 import { useState } from "react"
-import { Download, Loader2 } from "lucide-react"
+import { Loader2 } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
@@ -17,29 +17,15 @@ import {
 interface SaveModalProps {
   open: boolean
   onOpenChange: (open: boolean) => void
-  getScreenshot: () => Promise<string | null>
+  getImageDataUrl: () => string | null
   productTitle?: string
-  productUrl?: string | null
 }
 
-export function SaveModal({ open, onOpenChange, getScreenshot, productTitle, productUrl }: SaveModalProps) {
+export function SaveModal({ open, onOpenChange, getImageDataUrl, productTitle }: SaveModalProps) {
   const [name, setName] = useState("")
   const [email, setEmail] = useState("")
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [error, setError] = useState<string | null>(null)
-  const [sentImage, setSentImage] = useState<string | null>(null)
-
-  const reset = () => {
-    setName("")
-    setEmail("")
-    setError(null)
-    setSentImage(null)
-  }
-
-  const handleOpenChange = (next: boolean) => {
-    if (!next) reset()
-    onOpenChange(next)
-  }
 
   const handleSubmit = async (event: React.FormEvent) => {
     event.preventDefault()
@@ -50,98 +36,90 @@ export function SaveModal({ open, onOpenChange, getScreenshot, productTitle, pro
       return
     }
 
+    const imageDataUrl = getImageDataUrl()
+    if (!imageDataUrl) {
+      setError("We couldn't capture your try-on image. Please try again.")
+      return
+    }
+
     setIsSubmitting(true)
     try {
-      const imageDataUrl = await getScreenshot()
-      if (!imageDataUrl) {
-        throw new Error("We couldn't capture your try-on image. Please try again.")
-      }
-
-      const response = await fetch("/api/send-tryon", {
+      const saveResponse = await fetch("/api/try-on/save", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ name, email, imageDataUrl, productTitle, productUrl }),
+        body: JSON.stringify({ name, email, imageDataUrl, productTitle }),
       })
 
-      if (!response.ok) {
-        const body = await response.json().catch(() => ({}))
-        throw new Error(body.error || "Failed to send your look. Please try again.")
+      if (!saveResponse.ok) {
+        throw new Error("Failed to save your try-on")
+      }
+      const { id } = await saveResponse.json()
+
+      localStorage.setItem("trybands_pending_tryon", JSON.stringify({ id, name, email }))
+
+      const checkoutResponse = await fetch("/api/try-on/checkout", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ name, email, tryOnId: id }),
+      })
+
+      if (!checkoutResponse.ok) {
+        const body = await checkoutResponse.json().catch(() => ({}))
+        throw new Error(body.error || "Failed to start checkout")
       }
 
-      setSentImage(imageDataUrl)
+      const { checkoutUrl } = await checkoutResponse.json()
+      window.location.href = checkoutUrl
     } catch (err) {
       console.error(err)
       setError(err instanceof Error ? err.message : "Something went wrong. Please try again.")
-    } finally {
       setIsSubmitting(false)
     }
   }
 
   return (
-    <Dialog open={open} onOpenChange={handleOpenChange}>
+    <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent>
-        {sentImage ? (
-          <>
-            <DialogHeader>
-              <DialogTitle>Your look is on its way</DialogTitle>
-              <DialogDescription>Check your inbox — we've sent your look to {email}.</DialogDescription>
-            </DialogHeader>
-            <img src={sentImage || "/placeholder.svg"} alt="Your try-on" className="w-full rounded-lg border border-border" />
-            <DialogFooter>
-              <a href={sentImage} download="trybands-try-on.jpg" className="w-full sm:w-auto">
-                <Button variant="outline" className="w-full gap-2">
-                  <Download className="w-4 h-4" />
-                  Download Image
-                </Button>
-              </a>
-              <Button className="w-full sm:w-auto" onClick={() => handleOpenChange(false)}>
-                Done
-              </Button>
-            </DialogFooter>
-          </>
-        ) : (
-          <>
-            <DialogHeader>
-              <DialogTitle>Save My Look</DialogTitle>
-              <DialogDescription>
-                Enter your name and email and we'll send your try-on photo straight to your inbox — free.
-              </DialogDescription>
-            </DialogHeader>
+        <DialogHeader>
+          <DialogTitle>Save & Share Your Try-On</DialogTitle>
+          <DialogDescription>
+            $1 CAD to save your look — we use this to cover processing costs and will send your saved image to your
+            email.
+          </DialogDescription>
+        </DialogHeader>
 
-            <form onSubmit={handleSubmit} className="space-y-4">
-              <div className="space-y-1.5">
-                <Label htmlFor="tryon-name">Name</Label>
-                <Input
-                  id="tryon-name"
-                  value={name}
-                  onChange={(e) => setName(e.target.value)}
-                  placeholder="Jane Smith"
-                  required
-                />
-              </div>
-              <div className="space-y-1.5">
-                <Label htmlFor="tryon-email">Email</Label>
-                <Input
-                  id="tryon-email"
-                  type="email"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  placeholder="jane@example.com"
-                  required
-                />
-              </div>
+        <form onSubmit={handleSubmit} className="space-y-4">
+          <div className="space-y-1.5">
+            <Label htmlFor="tryon-name">Name</Label>
+            <Input
+              id="tryon-name"
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+              placeholder="Jane Smith"
+              required
+            />
+          </div>
+          <div className="space-y-1.5">
+            <Label htmlFor="tryon-email">Email</Label>
+            <Input
+              id="tryon-email"
+              type="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              placeholder="jane@example.com"
+              required
+            />
+          </div>
 
-              {error && <p className="text-sm text-destructive">{error}</p>}
+          {error && <p className="text-sm text-destructive">{error}</p>}
 
-              <DialogFooter>
-                <Button type="submit" disabled={isSubmitting} className="w-full sm:w-auto gap-2">
-                  {isSubmitting && <Loader2 className="w-4 h-4 animate-spin" />}
-                  Save My Look
-                </Button>
-              </DialogFooter>
-            </form>
-          </>
-        )}
+          <DialogFooter>
+            <Button type="submit" disabled={isSubmitting} className="w-full sm:w-auto gap-2">
+              {isSubmitting && <Loader2 className="w-4 h-4 animate-spin" />}
+              Pay $1 & Save
+            </Button>
+          </DialogFooter>
+        </form>
       </DialogContent>
     </Dialog>
   )
