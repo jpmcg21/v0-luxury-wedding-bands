@@ -62,6 +62,7 @@ export const LiveTryOn = forwardRef<LiveTryOnHandle, LiveTryOnProps>(function Li
   const [handStatus, setHandStatus] = useState<"searching" | "tracking" | "unavailable">("searching")
   const detectionUnavailableRef = useRef(false)
   const [usingUpload, setUsingUpload] = useState(false)
+  const [ringImageFailed, setRingImageFailed] = useState(false)
 
   const [scale, setScale] = useState(100)
   const [rotationOffset, setRotationOffset] = useState(0)
@@ -146,14 +147,34 @@ export const LiveTryOn = forwardRef<LiveTryOnHandle, LiveTryOnProps>(function Li
   // --- Ring image loading -----------------------------------------------------
 
   useEffect(() => {
-    if (!ringImageUrl) {
-      ringImageElRef.current = null
-      return
-    }
+    ringImageElRef.current = null
+    setRingImageFailed(false)
+    if (!ringImageUrl) return
+
     let cancelled = false
-    loadImage(ringImageUrl, "anonymous").then((img) => {
-      if (!cancelled) ringImageElRef.current = img
-    })
+
+    // Load with CORS so the canvas stays readable for the save/screenshot flow.
+    loadImage(ringImageUrl, "anonymous")
+      .then((img) => {
+        if (!cancelled) ringImageElRef.current = img
+      })
+      .catch((error) => {
+        if (cancelled) return
+        console.error("Ring image failed to load with CORS, retrying without it:", error)
+        // Fall back to a non-CORS load so the live ring still shows even if the
+        // CDN response is missing CORS headers — screenshot capture may later
+        // fail on a tainted canvas for this image, but a visible ring matters more.
+        loadImage(ringImageUrl)
+          .then((img) => {
+            if (!cancelled) ringImageElRef.current = img
+          })
+          .catch((fallbackError) => {
+            if (cancelled) return
+            console.error("Ring image failed to load entirely:", fallbackError)
+            setRingImageFailed(true)
+          })
+      })
+
     return () => {
       cancelled = true
     }
@@ -348,6 +369,12 @@ export const LiveTryOn = forwardRef<LiveTryOnHandle, LiveTryOnProps>(function Li
             {handStatus === "tracking" && "Ring tracking your hand"}
             {handStatus === "searching" && "Show your hand to the camera"}
             {handStatus === "unavailable" && "Auto-detect unavailable — use sliders"}
+          </div>
+        )}
+
+        {ringImageFailed && (
+          <div className="absolute bottom-3 left-3 right-3 bg-destructive text-destructive-foreground px-3 py-1.5 rounded-full text-xs text-center">
+            Couldn't load this ring's image — try another band
           </div>
         )}
       </div>
