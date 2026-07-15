@@ -1,7 +1,7 @@
 "use client"
 
 import { useState } from "react"
-import { Loader2 } from "lucide-react"
+import { Download, Loader2 } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
@@ -26,6 +26,19 @@ export function SaveModal({ open, onOpenChange, getImageDataUrl, productTitle }:
   const [email, setEmail] = useState("")
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [error, setError] = useState<string | null>(null)
+  const [savedImage, setSavedImage] = useState<string | null>(null)
+
+  const reset = () => {
+    setName("")
+    setEmail("")
+    setError(null)
+    setSavedImage(null)
+  }
+
+  const handleOpenChange = (next: boolean) => {
+    if (!next) reset()
+    onOpenChange(next)
+  }
 
   const handleSubmit = async (event: React.FormEvent) => {
     event.preventDefault()
@@ -44,82 +57,85 @@ export function SaveModal({ open, onOpenChange, getImageDataUrl, productTitle }:
 
     setIsSubmitting(true)
     try {
-      const saveResponse = await fetch("/api/try-on/save", {
+      await fetch("/api/try-on/save", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ name, email, imageDataUrl, productTitle }),
+        body: JSON.stringify({ name, email, productTitle }),
       })
 
-      if (!saveResponse.ok) {
-        throw new Error("Failed to save your try-on")
-      }
-      const { id } = await saveResponse.json()
-
-      localStorage.setItem("trybands_pending_tryon", JSON.stringify({ id, name, email }))
-
-      const checkoutResponse = await fetch("/api/try-on/checkout", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ name, email, tryOnId: id }),
-      })
-
-      if (!checkoutResponse.ok) {
-        const body = await checkoutResponse.json().catch(() => ({}))
-        throw new Error(body.error || "Failed to start checkout")
-      }
-
-      const { checkoutUrl } = await checkoutResponse.json()
-      window.location.href = checkoutUrl
+      setSavedImage(imageDataUrl)
     } catch (err) {
       console.error(err)
-      setError(err instanceof Error ? err.message : "Something went wrong. Please try again.")
+      setError("Something went wrong. Please try again.")
+    } finally {
       setIsSubmitting(false)
     }
   }
 
   return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
+    <Dialog open={open} onOpenChange={handleOpenChange}>
       <DialogContent>
-        <DialogHeader>
-          <DialogTitle>Save & Share Your Try-On</DialogTitle>
-          <DialogDescription>
-            $1 CAD to save your look — we use this to cover processing costs and will send your saved image to your
-            email.
-          </DialogDescription>
-        </DialogHeader>
-
-        <form onSubmit={handleSubmit} className="space-y-4">
-          <div className="space-y-1.5">
-            <Label htmlFor="tryon-name">Name</Label>
-            <Input
-              id="tryon-name"
-              value={name}
-              onChange={(e) => setName(e.target.value)}
-              placeholder="Jane Smith"
-              required
+        {savedImage ? (
+          <>
+            <DialogHeader>
+              <DialogTitle>Your look is saved</DialogTitle>
+              <DialogDescription>Download it below and share it however you like.</DialogDescription>
+            </DialogHeader>
+            <img
+              src={savedImage || "/placeholder.svg"}
+              alt="Your try-on"
+              className="w-full rounded-lg border border-border"
             />
-          </div>
-          <div className="space-y-1.5">
-            <Label htmlFor="tryon-email">Email</Label>
-            <Input
-              id="tryon-email"
-              type="email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              placeholder="jane@example.com"
-              required
-            />
-          </div>
+            <DialogFooter>
+              <a href={savedImage} download="trybands-try-on.png" className="w-full sm:w-auto">
+                <Button className="w-full gap-2">
+                  <Download className="w-4 h-4" />
+                  Download Image
+                </Button>
+              </a>
+            </DialogFooter>
+          </>
+        ) : (
+          <>
+            <DialogHeader>
+              <DialogTitle>Save Your Try-On</DialogTitle>
+              <DialogDescription>Enter your name and email to save and download your look.</DialogDescription>
+            </DialogHeader>
 
-          {error && <p className="text-sm text-destructive">{error}</p>}
+            <form onSubmit={handleSubmit} className="space-y-4">
+              <div className="space-y-1.5">
+                <Label htmlFor="tryon-name">Name</Label>
+                <Input
+                  id="tryon-name"
+                  value={name}
+                  onChange={(e) => setName(e.target.value)}
+                  placeholder="Jane Smith"
+                  required
+                />
+              </div>
+              <div className="space-y-1.5">
+                <Label htmlFor="tryon-email">Email</Label>
+                <Input
+                  id="tryon-email"
+                  type="email"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  placeholder="jane@example.com"
+                  required
+                />
+              </div>
 
-          <DialogFooter>
-            <Button type="submit" disabled={isSubmitting} className="w-full sm:w-auto gap-2">
-              {isSubmitting && <Loader2 className="w-4 h-4 animate-spin" />}
-              Pay $1 & Save
-            </Button>
-          </DialogFooter>
-        </form>
+              {error && <p className="text-sm text-destructive">{error}</p>}
+
+              <DialogFooter>
+                <Button type="submit" disabled={isSubmitting} className="w-full sm:w-auto gap-2">
+                  {isSubmitting && <Loader2 className="w-4 h-4 animate-spin" />}
+                  Save & Download
+                </Button>
+              </DialogFooter>
+            </form>
+          </>
+        )}
       </DialogContent>
     </Dialog>
   )

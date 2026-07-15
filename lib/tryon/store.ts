@@ -4,61 +4,44 @@ import { randomUUID } from "crypto"
 import { mkdir, readFile, writeFile } from "fs/promises"
 import path from "path"
 
-export type TryOnRecord = {
+// Lightweight marketing-list log of who tried on what.
+export type TryOnLead = {
   id: string
   name: string
   email: string
-  imageDataUrl: string
   productTitle?: string
   createdAt: string
 }
 
 const DATA_DIR = path.join(process.cwd(), "data")
-const DATA_FILE = path.join(DATA_DIR, "try-on-saves.json")
+const DATA_FILE = path.join(DATA_DIR, "try-on-leads.json")
 
-async function readAll(): Promise<TryOnRecord[]> {
+async function readAll(): Promise<TryOnLead[]> {
   try {
     const raw = await readFile(DATA_FILE, "utf-8")
-    return JSON.parse(raw) as TryOnRecord[]
+    return JSON.parse(raw) as TryOnLead[]
   } catch {
     return []
   }
 }
 
-async function writeAll(records: TryOnRecord[]) {
+async function writeAll(leads: TryOnLead[]) {
   await mkdir(DATA_DIR, { recursive: true })
-  await writeFile(DATA_FILE, JSON.stringify(records, null, 2), "utf-8")
+  await writeFile(DATA_FILE, JSON.stringify(leads, null, 2), "utf-8")
 }
 
-export async function saveTryOn(input: {
-  name: string
-  email: string
-  imageDataUrl: string
-  productTitle?: string
-}): Promise<TryOnRecord> {
-  const record: TryOnRecord = {
+export async function logTryOnLead(input: { name: string; email: string; productTitle?: string }): Promise<TryOnLead> {
+  const lead: TryOnLead = {
     id: randomUUID(),
     name: input.name,
     email: input.email,
-    imageDataUrl: input.imageDataUrl,
     productTitle: input.productTitle,
     createdAt: new Date().toISOString(),
   }
 
-  const records = await readAll()
-  records.push(record)
-  await writeAll(records)
+  const leads = await readAll()
+  leads.push(lead)
+  await writeAll(leads)
 
-  return record
-}
-
-export async function getTryOnById(id: string): Promise<TryOnRecord | null> {
-  const records = await readAll()
-  return records.find((r) => r.id === id) ?? null
-}
-
-export async function getLatestTryOnByEmail(email: string): Promise<TryOnRecord | null> {
-  const records = await readAll()
-  const matches = records.filter((r) => r.email.toLowerCase() === email.toLowerCase())
-  return matches.length > 0 ? matches[matches.length - 1] : null
+  return lead
 }
