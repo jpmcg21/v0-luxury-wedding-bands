@@ -8,22 +8,14 @@ export default function AboutPage() {
 
         <div className="prose prose-lg max-w-none space-y-6 text-muted-foreground leading-relaxed">
           <p className="text-xl text-foreground">
-            Just Bands is a Canadian-owned company founded on a simple belief: premium wedding bands shouldn't cost a
-            fortune.
+            We founded Just Bands because we saw too many couples paying a fortune for something that should be
+            simple: a well-made wedding band. So we built a company around a better way to buy one.
           </p>
 
           <p>
             Traditional jewelry retailers mark up wedding bands by 200-300%. We eliminate the middleman and pass those
-            savings directly to you. By cutting unnecessary costs, we offer the same premium materials and craftsmanship
-            at transparent, fair prices.
-          </p>
-
-          <h2 className="text-2xl font-semibold text-foreground mt-12 mb-4">The Canadian Advantage</h2>
-
-          <p>
-            As a proudly Canadian-owned business, we ship domestically to customers across all provinces. This means no
-            surprise customs fees, no duties, and no hidden charges at delivery. When you order from Just Bands, the
-            price you see is the price you pay.
+            savings directly to you, so couples can get an affordable, quality wedding band without paying for a
+            showroom they'll never visit.
           </p>
 
           <h2 className="text-2xl font-semibold text-foreground mt-12 mb-4">Our Approach</h2>
