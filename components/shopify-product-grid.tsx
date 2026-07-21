@@ -59,58 +59,44 @@ export function ShopifyProductGrid() {
 
   if (isLoading) {
     return (
-      <section className="py-16 md:py-24">
-        <div className="container mx-auto px-4">
-          <div className="text-center mb-12">
-            <h2 className="text-3xl md:text-4xl font-light mb-4">Our Collection</h2>
-            <p className="text-muted-foreground max-w-2xl mx-auto">Loading products...</p>
-          </div>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {[1, 2, 3, 4, 5, 6].map((i) => (
-              <div key={i} className="animate-pulse">
-                <div className="bg-muted aspect-square rounded-lg mb-4" />
-                <div className="h-4 bg-muted rounded w-3/4 mb-2" />
-                <div className="h-4 bg-muted rounded w-1/2" />
-              </div>
-            ))}
-          </div>
+      <section className="font-karla bg-[#f4ede0] border-b-[1.5px] border-[#2b2620] px-10 py-9 pb-2.5 md:px-16 lg:px-20 lg:py-9">
+        <div className="mb-5 text-[22px] font-light text-[#2b2620]">The Collection</div>
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5 pb-9">
+          {[1, 2, 3, 4, 5, 6].map((i) => (
+            <div key={i} className="animate-pulse">
+              <div className="bg-[#e3d9c4] h-[150px] mb-2.5" />
+              <div className="h-3 bg-[#e3d9c4] w-3/4 mb-2" />
+              <div className="h-3 bg-[#e3d9c4] w-1/3" />
+            </div>
+          ))}
         </div>
       </section>
     )
   }
 
   return (
-    <section id="collection" className="py-16 md:py-24">
-      <div className="container mx-auto px-4">
-        <div className="text-center mb-12">
-          <h2 className="text-3xl md:text-4xl font-light mb-4">Our Collection</h2>
-          <p className="text-muted-foreground max-w-2xl mx-auto">
-            Premium wedding bands at fair prices. No middlemen, no markups.
-          </p>
+    <section id="collection" className="font-karla bg-[#f4ede0] border-b-[1.5px] border-[#2b2620] px-10 py-9 pb-2.5 md:px-16 lg:px-20 lg:py-9">
+      <div className="mb-5 text-[22px] font-light text-[#2b2620]">The Collection</div>
+
+      <ProductFilters
+        selectedMetal={metalFilter}
+        selectedWidth={widthFilter}
+        onMetalChange={setMetalFilter}
+        onWidthChange={setWidthFilter}
+      />
+
+      {filteredProducts.length === 0 ? (
+        <div className="text-center py-12">
+          <p className="text-[#6b5f4f]">No products found. Try adjusting your filters.</p>
+          <p className="text-sm text-[#8a7d6a] mt-2">Add products in your Shopify admin to see them here.</p>
         </div>
-
-        {/* Filters */}
-        <ProductFilters
-          metalFilter={metalFilter}
-          widthFilter={widthFilter}
-          onMetalChange={setMetalFilter}
-          onWidthChange={setWidthFilter}
-        />
-
-        {/* Products Grid */}
-        {filteredProducts.length === 0 ? (
-          <div className="text-center py-12">
-            <p className="text-muted-foreground">No products found. Try adjusting your filters.</p>
-            <p className="text-sm text-muted-foreground mt-2">Add products in your Shopify admin to see them here.</p>
-          </div>
-        ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {filteredProducts.map((product) => (
-              <ShopifyProductCard key={product.id} product={product} />
-            ))}
-          </div>
-        )}
-      </div>
+      ) : (
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5 pb-9">
+          {filteredProducts.map((product) => (
+            <ShopifyProductCard key={product.id} product={product} />
+          ))}
+        </div>
+      )}
     </section>
   )
 }

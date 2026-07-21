@@ -1,6 +1,6 @@
 import type React from "react"
 import type { Metadata } from "next"
-import { Inter, Playfair_Display } from "next/font/google"
+import { Inter, Playfair_Display, Karla } from "next/font/google"
 import { Analytics } from "@vercel/analytics/next"
 import "./globals.css"
 import { ShopifyCartProvider } from "@/contexts/shopify-cart-context"
@@ -15,6 +15,12 @@ const playfair = Playfair_Display({
   subsets: ["latin"],
   weight: ["400", "500", "600", "700"],
   variable: "--font-playfair",
+})
+
+const karla = Karla({
+  subsets: ["latin"],
+  weight: ["300", "400", "700"],
+  variable: "--font-karla",
 })
 
 export const metadata: Metadata = {
@@ -47,7 +53,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className={`font-sans antialiased ${inter.variable} ${playfair.variable}`}>
+      <body className={`font-sans antialiased ${inter.variable} ${playfair.variable} ${karla.variable}`}>
         <ShopifyCartProvider>{children}</ShopifyCartProvider>
         <Analytics />
       </body>
