@@ -1,34 +1,33 @@
 export function ValueProps() {
   const benefits = [
     {
-      title: "Canadian-Owned",
-      description: "Proudly Canadian. Domestic shipping means no surprise duties or customs fees.",
+      label: "I. Fair, Ledgered Pricing",
+      description: "Material plus labour. We show our work.",
     },
     {
-      title: "Fair Pricing",
-      description: "Quality wedding bands at honest, transparent prices.",
+      label: "II. Real Materials",
+      description: "14k gold, platinum. Nothing plated, nothing thin.",
     },
     {
-      title: "Premium Materials",
-      description: "14k Gold and Platinum sourced from ethical suppliers.",
-    },
-    {
-      title: "Free Shipping & Returns",
-      description: "Try at home risk-free. 30-day return policy, no questions asked.",
+      label: "III. 30-Day Returns",
+      description: "Try it at home. Send it back if it's not right.",
     },
   ]
 
   return (
-    <section className="py-20 px-6 bg-secondary/30">
-      <div className="max-w-7xl mx-auto">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12">
-          {benefits.map((benefit, index) => (
-            <div key={index} className="text-center">
-              <h3 className="text-lg font-semibold mb-3">{benefit.title}</h3>
-              <p className="text-sm text-muted-foreground leading-relaxed">{benefit.description}</p>
-            </div>
-          ))}
-        </div>
+    <section className="font-karla bg-[#f4ede0] border-b-[1.5px] border-[#2b2620]">
+      <div className="grid grid-cols-1 sm:grid-cols-3">
+        {benefits.map((benefit, index) => (
+          <div
+            key={benefit.label}
+            className={`px-[18px] py-[22px] border-[#d8cdb8] ${
+              index < benefits.length - 1 ? "border-b sm:border-b-0 sm:border-r" : ""
+            }`}
+          >
+            <div className="mb-1.5 text-[13px] font-bold text-[#2b2620]">{benefit.label}</div>
+            <div className="text-xs leading-[1.5] text-[#6b5f4f]">{benefit.description}</div>
+          </div>
+        ))}
       </div>
     </section>
   )

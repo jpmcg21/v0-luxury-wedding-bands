@@ -1,34 +1,34 @@
 export function Hero() {
   return (
-    <section className="relative min-h-[90vh] flex items-center justify-center overflow-hidden mt-16">
-      <div className="absolute inset-0 bg-gradient-to-b from-background via-secondary/20 to-background" />
-      <img
-        src="/luxury-wedding-rings-on-elegant-marble-surface-wit.jpg"
-        alt="Premium wedding bands"
-        className="absolute inset-0 w-full h-full object-cover opacity-20"
-      />
-      <div className="relative z-10 text-center max-w-5xl mx-auto px-6">
-        <div className="inline-block mb-6 px-4 py-2 bg-foreground/5 backdrop-blur-sm text-sm font-medium tracking-wide">
-          CANADIAN-OWNED • PREMIUM QUALITY • FAIR PRICES
+    <section className="font-karla mt-[65px] bg-[#f4ede0]">
+      <div className="px-10 py-14 md:px-16 md:py-16 lg:px-20 lg:py-[52px] text-center border-b-[1.5px] border-[#2b2620]">
+        <div className="mb-4 text-[11px] tracking-[0.18em] uppercase text-[#a8532f]">
+          No. 014 in a series of honest rings
         </div>
-        <h1 className="text-5xl md:text-7xl lg:text-8xl font-light tracking-tight mb-8 text-balance leading-[1.1]">
-          Premium Wedding Bands
-          <br />
-          Fairly Priced
+        <h1 className="mx-auto mb-[18px] max-w-[560px] md:max-w-[680px] text-[46px] md:text-[58px] lg:text-[64px] font-light leading-[1.15] text-[#2b2620]">
+          Same gold, same shine, way less drama.
         </h1>
-        <p className="text-lg md:text-xl text-muted-foreground max-w-2xl mx-auto leading-relaxed mb-12">
-          Beautifully crafted 14k gold and platinum wedding bands. Quality materials, honest prices, made to last a
-          lifetime.
+        <p className="mx-auto mb-[26px] max-w-[420px] md:max-w-[480px] text-[15px] md:text-base leading-[1.6] text-[#4a4137]">
+          14k gold and platinum, cast the same way jewelers have cast them for a century. We just skip the markup
+          they add for the showroom.
         </p>
-        <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
-          <a
-            href="#products"
-            className="px-8 py-4 bg-foreground text-background font-medium hover:bg-foreground/90 transition-colors"
-          >
-            Shop Wedding Bands
-          </a>
-          <div className="text-sm text-muted-foreground">Starting at $299 • Free Canadian Shipping • No Duties</div>
+        <a
+          href="/#collection"
+          className="inline-block border-[1.5px] border-[#2b2620] px-[30px] py-3 text-[13px] font-bold tracking-[0.04em] text-[#2b2620] transition-colors hover:bg-[#2b2620] hover:text-[#f4ede0]"
+        >
+          Browse the Catalog →
+        </a>
+        <div className="mt-5 text-xs tracking-[0.04em] text-[#8a7d6a]">
+          Bands from $299 · Free shipping, easy returns
         </div>
+      </div>
+
+      <div className="h-[220px] md:h-[280px] lg:h-[340px] border-b-[1.5px] border-[#2b2620] overflow-hidden">
+        <img
+          src="/luxury-wedding-rings-on-elegant-marble-surface-wit.jpg"
+          alt="Wedding bands on marble"
+          className="photo-vintage h-full w-full object-cover"
+        />
       </div>
     </section>
   )

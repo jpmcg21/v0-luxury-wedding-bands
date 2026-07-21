@@ -78,6 +78,7 @@
   --font-sans: "Inter", "Geist Fallback";
   --font-serif: "Playfair Display", "Georgia", serif;
   --font-mono: "Geist Mono", "Geist Mono Fallback";
+  --font-karla: "Karla", "Inter", sans-serif;
   --color-background: var(--background);
   --color-foreground: var(--foreground);
   --color-card: var(--card);
@@ -123,4 +124,9 @@
   body {
     @apply bg-background text-foreground;
   }
+}
+
+/* Warm sepia/vintage duotone treatment for the "Quiet Catalog" homepage photography */
+.photo-vintage {
+  filter: sepia(0.35) saturate(1.3) contrast(1.05) brightness(0.97);
 }

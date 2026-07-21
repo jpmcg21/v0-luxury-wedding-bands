@@ -1,77 +1,28 @@
 export function Footer() {
+  const links = [
+    { href: "/#collection", label: "Shop" },
+    { href: "/about", label: "About" },
+    { href: "/blog", label: "Journal" },
+    { href: "/contact", label: "Contact" },
+    { href: "/shipping", label: "Shipping & Returns" },
+    { href: "/privacy", label: "Privacy" },
+    { href: "/terms", label: "Terms" },
+  ]
+
   return (
-    <footer className="border-t border-border bg-card mt-20">
-      <div className="container mx-auto px-6 py-12">
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
-          <div>
-            <h3 className="text-lg font-semibold tracking-tight mb-4 text-card-foreground">JUST BANDS</h3>
-            <p className="text-sm text-muted-foreground leading-relaxed">
-              Premium wedding bands at fair prices. Direct from our workshop to you.
-            </p>
-          </div>
-
-          <div>
-            <h4 className="text-sm font-medium mb-4 text-card-foreground">Shop</h4>
-            <ul className="space-y-2 text-sm">
-              <li>
-                <a href="/#products" className="text-muted-foreground hover:text-foreground transition-colors">
-                  All Wedding Bands
-                </a>
-              </li>
-              <li>
-                <a href="/#products" className="text-muted-foreground hover:text-foreground transition-colors">
-                  14k Gold Bands
-                </a>
-              </li>
-              <li>
-                <a href="/#products" className="text-muted-foreground hover:text-foreground transition-colors">
-                  Platinum Bands
-                </a>
-              </li>
-            </ul>
-          </div>
-
-          <div>
-            <h4 className="text-sm font-medium mb-4 text-card-foreground">Company</h4>
-            <ul className="space-y-2 text-sm">
-              <li>
-                <a href="/about" className="text-muted-foreground hover:text-foreground transition-colors">
-                  About Us
-                </a>
-              </li>
-              <li>
-                <a href="/contact" className="text-muted-foreground hover:text-foreground transition-colors">
-                  Contact
-                </a>
-              </li>
-              <li>
-                <a href="/shipping" className="text-muted-foreground hover:text-foreground transition-colors">
-                  Shipping & Returns
-                </a>
-              </li>
-            </ul>
-          </div>
-
-          <div>
-            <h4 className="text-sm font-medium mb-4 text-card-foreground">Legal</h4>
-            <ul className="space-y-2 text-sm">
-              <li>
-                <a href="/privacy" className="text-muted-foreground hover:text-foreground transition-colors">
-                  Privacy Policy
-                </a>
-              </li>
-              <li>
-                <a href="/terms" className="text-muted-foreground hover:text-foreground transition-colors">
-                  Terms & Conditions
-                </a>
-              </li>
-            </ul>
-          </div>
-        </div>
-
-        <div className="mt-12 pt-8 border-t border-border text-center text-sm text-muted-foreground">
-          <p>© 2026 Just Bands. Premium quality at fair prices.</p>
-        </div>
+    <footer className="font-karla bg-[#f4ede0] border-t-[1.5px] border-[#2b2620] px-10 py-[22px] md:px-16 lg:px-20">
+      <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between text-[11px] tracking-[0.03em] text-[#8a7d6a]">
+        <span>© 2026 Just Bands</span>
+        <nav className="flex flex-wrap gap-x-2 gap-y-1 md:justify-end">
+          {links.map((link, index) => (
+            <span key={link.href} className="flex items-center gap-2">
+              <a href={link.href} className="hover:text-[#2b2620] transition-colors">
+                {link.label}
+              </a>
+              {index < links.length - 1 && <span aria-hidden="true">·</span>}
+            </span>
+          ))}
+        </nav>
       </div>
     </footer>
   )
